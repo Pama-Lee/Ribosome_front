@@ -1,13 +1,19 @@
 // @ts-ignore
 /* eslint-disable */
 import { request } from 'umi';
+import {MenuDataItem} from "@umijs/route-utils";
+
+const BASE_API = "https://api.pamalee.cn";
 
 /** 获取当前的用户 GET /api/currentUser */
-export async function currentUser(options?: { [key: string]: any }) {
+export async function currentUser(body: API.LoginParams, options?: { [key: string]: any }) {
   return request<{
+    code: number;
     data: API.CurrentUser;
-  }>('/api/currentUser', {
-    method: 'GET',
+  }>(BASE_API+'/User/UserInfo', {
+    data: body,
+    requestType: 'form',
+    method: 'POST',
     ...(options || {}),
   });
 }
@@ -20,14 +26,28 @@ export async function outLogin(options?: { [key: string]: any }) {
   });
 }
 
+export async function getRoutes(option?:{[key: string]: any}){
+  return request<any>('http://localhost:8080/App/ribo/getRoutes',{
+    method: 'GET',
+    ...option
+  });
+}
+
+export async function getClubInfo(cid: string,option?:{[key: string]: any}){
+  return request<API.ClubInfo>('http://localhost:8080/App/ribo/getClub',{
+    method: 'POST',
+    data: {"cid":cid},
+    requestType: 'json',
+    ...option
+  });
+}
+
 /** 登录接口 POST /api/login/account */
 export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
-  return request<API.LoginResult>('/api/login/account', {
+  return request<API.LoginResult>(BASE_API+'/Login/LoginToken', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
     data: body,
+    requestType: 'form',
     ...(options || {}),
   });
 }

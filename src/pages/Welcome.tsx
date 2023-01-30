@@ -3,6 +3,8 @@ import { Alert, Card, Typography } from 'antd';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'umi';
 import styles from './Welcome.less';
+const {Text, Title} = Typography;
+import Progress from 'antd/es/progress';
 
 const CodePreview: React.FC = ({ children }) => (
   <pre className={styles.pre}>
@@ -17,20 +19,13 @@ const Welcome: React.FC = () => {
 
   return (
     <PageContainer>
+
+      <Title level={2}>🎇Welcome to Ribosome!</Title>
       <Card>
-        <Alert
-          message={intl.formatMessage({
-            id: 'pages.welcome.alertMessage',
-            defaultMessage: 'Faster and stronger heavy-duty components have been released.',
-          })}
-          type="success"
-          showIcon
-          banner
-          style={{
-            margin: -12,
-            marginBottom: 24,
-          }}
-        />
+        <Progress type="circle" percent={100} width={23} /><Text>  Ribosome Service</Text><br/>
+        <Progress type="circle" percent={100} width={23} /><Text>  RootJam Service</Text>
+      </Card>
+      <Card>
         <Typography.Text strong>
           <a
             href="https://procomponents.ant.design/components/table"
@@ -40,7 +35,10 @@ const Welcome: React.FC = () => {
             <FormattedMessage id="pages.welcome.link" defaultMessage="Welcome" />
           </a>
         </Typography.Text>
-        <CodePreview>yarn add @ant-design/pro-components</CodePreview>
+        <br/>
+        <Text>
+          公告
+        </Text>
       </Card>
     </PageContainer>
   );

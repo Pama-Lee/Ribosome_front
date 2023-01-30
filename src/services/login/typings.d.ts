@@ -5,29 +5,26 @@ declare namespace API {
   type CurrentUser = {
     name?: string;
     avatar?: string;
+    studentID?: string;
     userid?: string;
     email?: string;
-    signature?: string;
-    title?: string;
-    group?: string;
-    tags?: { key?: string; label?: string }[];
-    notifyCount?: number;
-    unreadCount?: number;
-    country?: string;
-    access?: string;
-    geographic?: {
-      province?: { label?: string; key?: string };
-      city?: { label?: string; key?: string };
-    };
-    address?: string;
-    phone?: string;
   };
 
   type LoginResult = {
     status?: string;
-    type?: string;
-    currentAuthority?: string;
+    code?: string;
+    message?: string;
+    token?: string;
   };
+
+  type ClubInfo = {
+cid?: string;
+club_name?: string;
+club_logo?: string;
+description?: string;
+type?: string;
+club_president?: string;
+  }
 
   type PageParams = {
     current?: number;
@@ -62,10 +59,7 @@ declare namespace API {
   };
 
   type LoginParams = {
-    username?: string;
-    password?: string;
-    autoLogin?: boolean;
-    type?: string;
+    token?: string;
   };
 
   type ErrorResponse = {

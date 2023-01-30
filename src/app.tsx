@@ -6,11 +6,12 @@ import { PageLoading, SettingDrawer } from '@ant-design/pro-components';
 import type { RunTimeLayoutConfig } from 'umi';
 import { history, Link } from 'umi';
 import defaultSettings from '../config/defaultSettings';
-import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
+import {MenuDataItem} from "@umijs/route-utils";
+import {getRoutes} from "@/services/login/api";
+import {IconMap} from "antd/lib/result";
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
-
 /** 获取用户信息比较慢的时候会展示一个 loading */
 export const initialStateConfig = {
   loading: <PageLoading />,
@@ -18,33 +19,27 @@ export const initialStateConfig = {
 
 /**
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
+ * 全局数据共享
+ * 其他部位通过 useModel('@@initialState') 可以拿到这个数据
  * */
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
+  isLogin?: boolean;
   currentUser?: API.CurrentUser;
   loading?: boolean;
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
+  menuData: MenuDataItem[]
 }> {
-  const fetchUserInfo = async () => {
-    try {
-      const msg = await queryCurrentUser();
-      return msg.data;
-    } catch (error) {
-      history.push(loginPath);
-    }
-    return undefined;
-  };
+  const menuDatas = await getRoutes();
   // 如果不是登录页面，执行
   if (history.location.pathname !== loginPath) {
-    const currentUser = await fetchUserInfo();
     return {
-      fetchUserInfo,
-      currentUser,
+      menuData: menuDatas,
       settings: defaultSettings,
     };
   }
   return {
-    fetchUserInfo,
+    menuData: menuDatas,
     settings: defaultSettings,
   };
 }
@@ -52,6 +47,16 @@ export async function getInitialState(): Promise<{
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
   return {
+    //菜单
+    menu: {
+      request: async () => {
+        const menus = await getRoutes();
+        return menus.data;
+      },
+      locale: false,
+    },
+
+
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
     waterMarkProps: {
@@ -61,7 +66,12 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     onPageChange: () => {
       const { location } = history;
       // 如果没有登录，重定向到 login
-      if (!initialState?.currentUser && location.pathname !== loginPath) {
+      // if (!initialState?.currentUser && location.pathname !== loginPath) {
+      //   history.push(loginPath);
+      // }
+      const queryParams = new URLSearchParams(location.search)
+      const token = queryParams.get("token")
+      if (!initialState?.currentUser && location.pathname !== loginPath && token == null){
         history.push(loginPath);
       }
     },
@@ -75,13 +85,16 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
             <BookOutlined />
             <span>业务组件文档</span>
           </Link>,
+        <Link to="/~docs" key="docs">
+          <BookOutlined />
+        </Link>,
         ]
       : [],
     menuHeaderRender: undefined,
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
     // 增加一个 loading 的状态
-    childrenRender: (children, props) => {
+    childrenRender: (children: any, props: { location: { pathname: string | string[]; }; }) => {
       // if (initialState?.loading) return <PageLoading />;
       return (
         <>
@@ -91,12 +104,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
               disableUrlParams
               enableDarkTheme
               settings={initialState?.settings}
-              onSettingChange={(settings) => {
-                setInitialState((preInitialState) => ({
-                  ...preInitialState,
-                  settings,
-                }));
-              }}
             />
           )}
         </>

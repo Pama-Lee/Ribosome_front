@@ -85,9 +85,9 @@ $ mkdir <your-project-name>
 $ cd <your-project-name>
 $ yarn create umi  # ou npm create umi
 
-# Escolha ant-design-pro:
+# Escolha login:
  Selecione o tipo do boilerplate (Use as teclas de seta)
-❯ ant-design-pro  - Create project with an layout-only ant-design-pro boilerplate, use together with umi block.
+❯ login  - Create project with an layout-only login boilerplate, use together with umi block.
   app             - Create project with a simple boilerplate, support typescript.
   block           - Create a umi block.
   library         - Create a library with umi.

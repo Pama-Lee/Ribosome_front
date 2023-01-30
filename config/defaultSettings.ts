@@ -4,7 +4,6 @@ const Settings: LayoutSettings & {
   pwa?: boolean;
   logo?: string;
 } = {
-  navTheme: 'light',
   // 拂晓蓝
   primaryColor: '#1890ff',
   layout: 'mix',
@@ -12,9 +11,9 @@ const Settings: LayoutSettings & {
   fixedHeader: false,
   fixSiderbar: true,
   colorWeak: false,
-  title: 'Ant Design Pro',
+  title: 'Ribosome',
   pwa: false,
-  logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
+  logo: 'https://github.com/Pama-Lee/Ribosome/raw/main/img/Logo/Ribosome.png',
   iconfontUrl: '',
 };
 

@@ -1,5 +1,24 @@
 ﻿export default [
   {
+    path: '/club',
+    routes: [
+      {
+        path: '/club/club_Index',
+      },
+      {
+        name: 'club',
+        path: '/club/:id',
+        component: './club',
+        icon: 'team',
+        routes: []
+      },
+      {
+        component: './404',
+      }
+    ]
+  },
+
+  {
     path: '/user',
     layout: false,
     routes: [
