@@ -2,10 +2,10 @@ import {useParams} from "umi";
 import {getClubInfo} from "@/services/login/api";
 import {useEffect,useState} from "react";
 import { history } from 'umi';
-import {PageContainer} from "@ant-design/pro-components";
+import {PageContainer, PageLoading} from "@ant-design/pro-components";
 
 import type { MenuProps } from 'antd';
-import { Menu } from 'antd';
+import {Menu} from 'antd';
 import {HomeOutlined, ProjectOutlined, UserOutlined} from "@ant-design/icons";
 import Loader from "@/pages/club/pages/loader";
 const items: MenuProps['items'] = [
@@ -25,16 +25,15 @@ const items: MenuProps['items'] = [
   }
 ];
 
-
-
-
-
 const Index = (props: any) => {
+
+  // 设定等待状态
+  const [loading,setLoading] = useState(true);
 
   const [current, setCurrent] = useState('index');
 
   const onClick: MenuProps['onClick'] = (e) => {
-    console.log('click ', e.key);
+    //console.log('click ', e.key);
     setCurrent(e.key);
   };
 
@@ -42,6 +41,7 @@ const Index = (props: any) => {
   const getClubInfos = async () => {
     const clubInfo = await getClubInfo(props.params.id);
     setData(clubInfo)
+    setLoading(false)
     return clubInfo;
   }
 
@@ -51,12 +51,17 @@ const Index = (props: any) => {
     history.listen(() => {
       getClubInfos();
     })
+    return () => {
+      setData({});
+    };
   },[]);
-
+  if (loading) {
+return <PageLoading />
+  }
   return(
     <PageContainer>
       <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items} theme="light" />
-     <Loader name={current} clubData={data}/>
+      <Loader name={current} clubData={data}/>
     </PageContainer>
   )
 }

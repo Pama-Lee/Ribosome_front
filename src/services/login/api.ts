@@ -42,6 +42,28 @@ export async function getClubInfo(cid: string,option?:{[key: string]: any}){
   });
 }
 
+// 获取社团用户
+export async function getClubUser(cid: string,option?:{[key: string]: any}){
+  return request<API.ClubUser>('http://localhost:8080/App/ribo/getClubUser',{
+    method: 'POST',
+    data: {"cid":cid},
+    requestType: 'json',
+    ...option
+  });
+}
+
+// 获取社团活动
+export async function getClubActivity(cid: string,option?:{[key: string]: any}){
+  return request<API.ClubActivity>('http://localhost:8080/App/ribo/getClubActivity',{
+    method: 'POST',
+    data: {"cid":cid},
+    requestType: 'json',
+    ...option
+  });
+}
+
+
+
 /** 登录接口 POST /api/login/account */
 export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
   return request<API.LoginResult>(BASE_API+'/Login/LoginToken', {

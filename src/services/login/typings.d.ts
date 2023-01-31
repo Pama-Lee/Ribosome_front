@@ -26,6 +26,23 @@ type?: string;
 club_president?: string;
   }
 
+  type ClubUser = {
+    uid?: string;
+    username?: string;
+    email?: string;
+    join_time?: string;
+  }
+
+  type ClubActivity = {
+    aid?: string;
+activity_name?: string;
+activity_time?: string;
+activity_place?: string;
+activity_type?: string;
+activity_status?: string;
+activity_description?: string;
+  }
+
   type PageParams = {
     current?: number;
     pageSize?: number;
