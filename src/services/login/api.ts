@@ -1,7 +1,6 @@
 // @ts-ignore
 /* eslint-disable */
 import { request } from 'umi';
-import {MenuDataItem} from "@umijs/route-utils";
 
 const BASE_API = "https://api.pamalee.cn";
 
@@ -10,9 +9,21 @@ export async function currentUser(body: API.LoginParams, options?: { [key: strin
   return request<{
     code: number;
     data: API.CurrentUser;
-  }>(BASE_API+'/User/UserInfo', {
+  }>('http://localhost:8080/App/ribo/getUserInfo', {
     data: body,
-    requestType: 'form',
+    requestType: 'json',
+    method: 'POST',
+    ...(options || {}),
+  });
+}
+
+/**
+ * 更新用户信息
+ */
+export async function updateUserInfo(body: API.UpdateParam, options?: { [key: string]: any }) {
+  return request<any>('http://localhost:8080/App/ribo/updateUserInfo', {
+    data: body,
+    requestType: 'json',
     method: 'POST',
     ...(options || {}),
   });
@@ -62,14 +73,47 @@ export async function getClubActivity(cid: string,option?:{[key: string]: any}){
   });
 }
 
+export async function getClubList(option?:{[key: string]: any}){
+  return request<any>('http://localhost:8080/App/ribo/getClubList',{
+    method: 'GET',
+    ...option
+  });
+}
+
+/**
+ * 获取用户消息列表
+ * methode: POST
+ * data: {uid,token}
+ */
+export async function getUserMessageList(params: {
+  uid: string;
+  token: string;
+}): Promise<{ data: { list: API.UserMessage[]}}> {
+  return request('http://localhost:8080/App/ribo/getUserMessageList', {
+    method: 'POST',
+    data: params,
+    requestType: 'json',
+  });
+}
+
+
+export async function newClubApplication(body: API.ClubApplication, option?:{[key: string]: any}){
+  return request<any>('http://localhost:8080/App/ribo/newApplication',{
+    method: 'POST',
+    data: body,
+    requestType: 'json',
+    ...option
+  });
+}
+
 
 
 /** 登录接口 POST /api/login/account */
 export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
-  return request<API.LoginResult>(BASE_API+'/Login/LoginToken', {
+  return request<API.LoginResult>('http://localhost:8080/App/ribo/auth/loginToken', {
     method: 'POST',
     data: body,
-    requestType: 'form',
+    requestType: 'json',
     ...(options || {}),
   });
 }

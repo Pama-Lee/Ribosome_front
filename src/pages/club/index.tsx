@@ -25,49 +25,61 @@ const items: MenuProps['items'] = [
   }
 ];
 
-const Index = (props: any) => {
 
+
+
+const Index = () => {
+  const cid: {id: any} = useParams();
   // 设定等待状态
-  const [loading,setLoading] = useState(true);
-
+  const [state,setState] = useState<{
+    querying?: boolean;
+    loading: boolean;
+    cidHistory?: any;
+    data?: API.ClubInfo;
+  }>({
+    querying: false,
+    loading: true,
+  });
   const [current, setCurrent] = useState('index');
-
   const onClick: MenuProps['onClick'] = (e) => {
     //console.log('click ', e.key);
     setCurrent(e.key);
   };
-
-  const [data, setData] = useState<API.ClubInfo>();
-  const getClubInfos = async () => {
-    const clubInfo = await getClubInfo(props.params.id);
-    setData(clubInfo)
-    setLoading(false)
-    return clubInfo;
+  if (state.loading && !state.querying){
+    console.log("loading")
+    const getClubInfos = () => {
+      const clubInfo = getClubInfo(cid.id).then((res) => {
+        console.log("loading1")
+        setState({
+          querying: false,
+          loading: false,
+          cidHistory: cid.id,
+          data: res,
+        })
+      });
+    }
+    getClubInfos();
+  }else {
+    console.log("not loading");
+    if (state.cidHistory !== cid.id){
+      console.log("not loading1");
+      setState({
+        loading: true,
+        cidHistory: cid.id,
+      })
+    }
   }
 
-  // @ts-ignore
-  useEffect(async ()=>{
-    await getClubInfos();
-    history.listen(() => {
-      getClubInfos();
-    })
-    return () => {
-      setData({});
-    };
-  },[]);
-  if (loading) {
+
+  if (state.loading) {
 return <PageLoading />
   }
   return(
     <PageContainer>
       <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items} theme="light" />
-      <Loader name={current} clubData={data}/>
+      <Loader name={current} clubData={state.data}/>
     </PageContainer>
   )
 }
 
-export default (props: any)=>(
-   <Index
-    {...props}
-    params={useParams()}/>
-);
+export default Index;

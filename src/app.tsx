@@ -8,7 +8,7 @@ import { history, Link } from 'umi';
 import defaultSettings from '../config/defaultSettings';
 import {MenuDataItem} from "@umijs/route-utils";
 import {getRoutes} from "@/services/login/api";
-import {IconMap} from "antd/lib/result";
+import {Button, Modal} from "antd";
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -24,28 +24,63 @@ export const initialStateConfig = {
  * */
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
+  isComplete?: boolean;
   isLogin?: boolean;
   currentUser?: API.CurrentUser;
   loading?: boolean;
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
-  menuData: MenuDataItem[]
+  menuData?: MenuDataItem[];
+  permissions?: string[];
 }> {
   const menuDatas = await getRoutes();
   // 如果不是登录页面，执行
   if (history.location.pathname !== loginPath) {
     return {
+      isComplete: true,
       menuData: menuDatas,
       settings: defaultSettings,
     };
   }
   return {
+    isComplete: true,
     menuData: menuDatas,
     settings: defaultSettings,
   };
 }
 
+
+// 检查用户权限
+const checkPermissions = (permissions: string[]) => {
+  if (/admin/.test(location.pathname)){
+    // 管理员访问页面
+    return !!permissions?.includes("admin");
+}else {
+    // 管理员无法访问一般页面
+    return !permissions?.includes("admin");
+  }
+}
+
+
+
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
+
+
+  const showModal = () => {
+    setInitialState({
+      ...initialState,
+      isComplete: false,
+    })
+  };
+
+  const handleOk = () => {
+    setInitialState({
+      ...initialState,
+      isComplete: true,
+    })
+    history.push("/accountsettings")
+  };
+
   return {
     //菜单
     menu: {
@@ -53,10 +88,8 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         const menus = await getRoutes();
         return menus.data;
       },
-      locale: false,
+    //  locale: false,
     },
-
-
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
     waterMarkProps: {
@@ -65,15 +98,30 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     footerRender: () => <Footer />,
     onPageChange: () => {
       const { location } = history;
-      // 如果没有登录，重定向到 login
-      // if (!initialState?.currentUser && location.pathname !== loginPath) {
-      //   history.push(loginPath);
-      // }
       const queryParams = new URLSearchParams(location.search)
+      const { pathname } = history.location;
       const token = queryParams.get("token")
+      console.log(location)
       if (!initialState?.currentUser && location.pathname !== loginPath && token == null){
-        history.push(loginPath);
+        history.replace({
+          pathname: loginPath,
+          search:  "redirect="+pathname+location.search,
+        });
       }
+      if (initialState?.currentUser && !initialState?.currentUser?.name && location.pathname !== loginPath && location.pathname !== "/accountsettings") {
+        console.log(location.pathname)
+        showModal();
+      }
+
+      // 检查权限
+      // @ts-ignore
+      if (!checkPermissions(initialState?.permissions,location.pathname) && location.pathname !== "/application"){
+        // 返回403
+        history.replace({
+          pathname: '/forbidden',
+        })
+      }
+
     },
     links: isDev
       ? [
@@ -95,7 +143,23 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     // unAccessible: <div>unAccessible</div>,
     // 增加一个 loading 的状态
     childrenRender: (children: any, props: { location: { pathname: string | string[]; }; }) => {
-      // if (initialState?.loading) return <PageLoading />;
+       if (initialState?.loading) return <PageLoading />;
+       if (initialState?.isComplete == false) return(
+         <Modal title="🤗初次见面!🤗"
+                onOk={handleOk}
+                open={!initialState?.isComplete}
+                closable={false}
+                maskClosable={false}
+                okText="确定"
+                cancelText=""
+                footer={<Button key="submit" type="primary" onClick={handleOk}>
+                  确定
+                </Button>}
+         >
+           <p>请先完善个人信息</p>
+           <p>点击确定后，将跳转到个人信息页面</p>
+         </Modal>
+       );
       return (
         <>
           {children}

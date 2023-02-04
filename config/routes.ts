@@ -1,4 +1,9 @@
-﻿export default [
+export default [
+  {
+    path: '/application',
+    component: './Application',
+    name: 'application',
+  },
   {
     path: '/club',
     routes: [
@@ -6,18 +11,21 @@
         path: '/club/club_Index',
       },
       {
-        name: 'club',
-        path: '/club/:id',
+        path: '/club/list',
+        component: './club/ClubList',
+        routes: [],
+      },
+      {
+        path: '/club/detail/:id',
         component: './club',
         icon: 'team',
-        routes: []
+        routes: [],
       },
       {
         component: './404',
-      }
-    ]
+      },
+    ],
   },
-
   {
     path: '/user',
     layout: false,
@@ -42,13 +50,23 @@
     path: '/admin',
     name: 'admin',
     icon: 'crown',
-    access: 'canAdmin',
     routes: [
       {
-        path: '/admin/sub-page',
-        name: 'sub-page',
+        path: '/admin/club-manager',
+        name: 'club-manager',
         icon: 'smile',
-        component: './Welcome',
+        component: './admin/ClubManager',
+      },{
+        path: '/admin/activity-manager',
+        name: 'activity-manager',
+        icon: 'smile',
+        component: './admin/ActivityManager',
+      },
+      {
+        name: '分析页',
+        icon: 'smile',
+        path: '/admin/dashboard',
+        component: './admin/DashboardAnalysis',
       },
       {
         component: './404',
@@ -64,6 +82,24 @@
   {
     path: '/',
     redirect: '/welcome',
+  },
+  {
+    name: '个人中心',
+    icon: 'smile',
+    path: '/accountcenter',
+    component: './AccountCenter',
+  },
+  {
+    name: '个人设置',
+    icon: 'smile',
+    path: '/accountsettings',
+    component: './AccountSettings',
+  },
+  {
+    name: '403',
+    icon: 'smile',
+    path: '/forbidden',
+    component: './Forbidden',
   },
   {
     component: './404',

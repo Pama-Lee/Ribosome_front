@@ -3,12 +3,20 @@
 
 declare namespace API {
   type CurrentUser = {
+    token?: string;
     name?: string;
+    phone?: string;
     avatar?: string;
     studentID?: string;
-    userid?: string;
+    uid?: string;
     email?: string;
   };
+
+  type UpdateParam = {
+name?: string;
+phone?: [];
+token?: string;
+  }
 
   type LoginResult = {
     status?: string;
@@ -24,6 +32,13 @@ club_logo?: string;
 description?: string;
 type?: string;
 club_president?: string;
+  }
+
+  type ClubApplication = {
+    token?: string;
+    cid?: string|null;
+    reason?: string;
+    fee?: number;
   }
 
   type ClubUser = {
@@ -42,6 +57,16 @@ activity_type?: string;
 activity_status?: string;
 activity_description?: string;
   }
+
+  // 用户消息列表
+type UserMessage = {
+    mid?: string;
+    title?: string;
+    content?: string;
+    time?: string;
+    status?: string;
+  }
+
 
   type PageParams = {
     current?: number;
@@ -77,6 +102,8 @@ activity_description?: string;
 
   type LoginParams = {
     token?: string;
+    time?: string;
+    version?: string;
   };
 
   type ErrorResponse = {

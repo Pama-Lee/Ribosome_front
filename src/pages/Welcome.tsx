@@ -1,5 +1,5 @@
 import { PageContainer } from '@ant-design/pro-components';
-import { Alert, Card, Typography } from 'antd';
+import {Alert, Card, Carousel, Typography} from 'antd';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'umi';
 import styles from './Welcome.less';
@@ -16,10 +16,8 @@ const CodePreview: React.FC = ({ children }) => (
 
 const Welcome: React.FC = () => {
   const intl = useIntl();
-
   return (
     <PageContainer>
-
       <Title level={2}>🎇Welcome to Ribosome!</Title>
       <Card>
         <Progress type="circle" percent={100} width={23} /><Text>  Ribosome Service</Text><br/>

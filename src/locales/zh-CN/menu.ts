@@ -2,6 +2,7 @@ export default {
   'menu.welcome': '欢迎',
   'menu.club': '社团',
   'menu.club.club_Index': '参与的社团',
+  'menu.club.club_List': '社团列表',
   'menu.more-blocks': '更多区块',
   'menu.home': '首页',
   'menu.admin': '管理页',

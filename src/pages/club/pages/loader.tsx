@@ -4,8 +4,9 @@ import type { ProColumns } from '@ant-design/pro-components';
 import {PageLoading, ProTable, TableDropdown} from '@ant-design/pro-components';
 import {Button, Card, Col, Row, Image, Alert} from 'antd';
 import styles from './loader.less';
-import {getClubUser} from "@/services/login/api";
+import {getClubActivity, getClubUser} from "@/services/login/api";
 
+let params: any;
 
 const positionEnv = {
   0: '社长',
@@ -102,13 +103,13 @@ function index(param: any){
   return (
     <div>
       <Row>
-        <Col xs={0} md={12} lg={18}>
+        <Col lg={17} md={24} xs={24}>
           <Card title={param.clubData.club_name} bordered={true}>
             <Alert message="在线人数:10" type="success" />
 
           </Card>
         </Col>
-        <Col xs={24} md={12} lg={6}>
+        <Col lg={7} md={24} xs={24}>
           <Card bordered={false} bodyStyle={{textAlign: "center"}} >
             <Image
               className={styles.logo}
@@ -121,14 +122,6 @@ function index(param: any){
           </Card>
         </Col>
       </Row>
-      <Row>
-        <Col xs={24} md={0}>
-          <Card title={param.clubData.club_name} bordered={true}>
-            <Alert message="在线人数:10" type="success" />
-
-          </Card>
-        </Col>
-      </Row>
     </div>
 
   );
@@ -136,7 +129,12 @@ function index(param: any){
 
 function activity(state: any) {
   const [loading,setLoading] = state;
-
+  getClubActivity(params.clubData.cid).then((res) => {
+    // @ts-ignore
+    activityListDataSource = res;
+    setLoading(false);
+   // console.log(setLoading)
+  });
 
   if (loading) {
     return <PageLoading />
@@ -170,6 +168,8 @@ function activity(state: any) {
 
 
 function Loader(param: any) {
+ // console.log(param)
+  params = param;
   const [loading,setLoading] = useState(true);
   switch (param.name) {
     case 'user':

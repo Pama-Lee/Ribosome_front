@@ -34,13 +34,15 @@ const Login: React.FC = () => {
     try {
       const body: API.LoginParams = {};
       body.token = cookie.load("Ribo_token");
+      body.time = String(new Date().getTime());
+      body.version = "1.0.0";
       if (!body?.token){
         history.push(loginPath);
         return undefined;
       }
       const msg = await queryCurrentUser(body);
       // alert(msg.data.email)
-      return msg.data;
+      return msg;
     } catch (error) {
       history.push(loginPath);
       return undefined;
@@ -48,11 +50,14 @@ const Login: React.FC = () => {
   };
   // 验证登录操作
   const handleSubmit = async (values: API.LoginParams) => {
+    if (initialState?.isLogin) {
+      return;
+    }
     try {
       // 登录
       const msg = await login({ ...values});
       // @ts-ignore
-      if (msg.code === 200) {
+      if (msg.code === "200") {
 
         const defaultLoginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
@@ -60,17 +65,17 @@ const Login: React.FC = () => {
         });
         message.success(defaultLoginSuccessMessage);
         // @ts-ignore
-        cookie.save("Ribo_token",msg.token,{path:'/'});
-        const data = await fetchUserInfo();
+        cookie.save("Ribo_token",values.token,{path:'/'});
+        const data: any = await fetchUserInfo();
         // @ts-ignore
         const menudata: []  = initialState.menuData;
         await setInitialState(()=>({
           isLogin: true,
-          currentUser: data,
+          currentUser: data?.data,
           settings: defaultSettings,
           menuData: menudata,
+          permissions: data?.permission,
         }));
-
         if (!history) return;
         const { query } = history.location;
         const { redirect } = query as { redirect: string };
@@ -78,7 +83,6 @@ const Login: React.FC = () => {
         return;
       }else {
         message.error(msg.message);
-        console.log(msg.code)
         return;
       }
     } catch (error) {
@@ -98,14 +102,18 @@ const Login: React.FC = () => {
   const token = queryParams.get("token")
   if (token != null){
     const res: API.LoginParams = {
-      token: token
+      token: token,
+      time: String(new Date().getTime()),
+      version: "1.0.0"
     }
     handleSubmit(res);
   }else {
     const token_ribo = cookie.load("Ribo_token")
     if (token_ribo != undefined){
       const ress: API.LoginParams = {
-        token: token_ribo
+        token: token_ribo,
+        time: String(new Date().getTime()),
+        version: "1.0.0"
       }
       handleSubmit(ress);
     }else {
