@@ -6,13 +6,13 @@ import {getClubList} from "@/services/login/api";
 const columns: ProColumns<API.ClubInfo>[] = [
   {
     title: '社团名称',
-    dataIndex: 'club_name',
+    dataIndex: 'name',
   },{
   title: '社团人数',
-  dataIndex: 'club_member_count',
+  dataIndex: 'number',
   },{
   title: '社团主席',
-dataIndex: 'club_president',
+  dataIndex: 'presidentName',
   }
 ]
 

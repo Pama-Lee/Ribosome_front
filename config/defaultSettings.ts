@@ -5,16 +5,16 @@ const Settings: LayoutSettings & {
   logo?: string;
 } = {
   // 拂晓蓝
-  primaryColor: '#1890ff',
   layout: 'mix',
   contentWidth: 'Fluid',
-  fixedHeader: false,
+  fixedHeader: true,
   fixSiderbar: true,
   colorWeak: false,
   title: 'Ribosome',
   pwa: false,
   logo: 'https://github.com/Pama-Lee/Ribosome/raw/main/img/Logo/Ribosome.png',
   iconfontUrl: '',
+
 };
 
 export default Settings;

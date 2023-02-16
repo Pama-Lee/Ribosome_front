@@ -1,125 +1,51 @@
-import {
-  DownloadOutlined,
-  EditOutlined,
-  EllipsisOutlined,
-  ShareAltOutlined,
-} from '@ant-design/icons';
-import { useRequest } from 'umi';
-import { Avatar, Card, Dropdown, List, Menu, Tooltip } from 'antd';
-import React from 'react';
-import numeral from 'numeral';
-import type { ListItemDataType } from '../../data.d';
-import { queryFakeList } from '../../service';
-import stylesApplications from './index.less';
+import {useRequest} from "@@/plugin-request/request";
+import {getClubApplicationList, getUserMessageList} from "@/services/login/api";
+import {ProTable} from "@ant-design/pro-components";
+import cookie from "react-cookies";
 
-export function formatWan(val: number) {
-  const v = val * 1;
-  if (!v || Number.isNaN(v)) return '';
+let datas: API.ClubApplication[] = [];
 
-  let result: React.ReactNode = val;
-  if (val > 10000) {
-    result = (
-      <span>
-        {Math.floor(val / 10000)}
-        <span
-          style={{
-            position: 'relative',
-            top: -2,
-            fontSize: 14,
-            fontStyle: 'normal',
-            marginLeft: 2,
-          }}
-        >
-          万
-        </span>
-      </span>
-    );
+const columns = [
+  {
+    title: '社团',
+    dataIndex: 'clubName',
+  },
+  {
+    title: '是否通过',
+    dataIndex: 'status',
+    valueEnum: {
+      0: { text: '未审核', status: 'Default' },
+      1: { text: '通过', status: 'Success' },
+      2: { text: '未通过', status: 'Error' },
+    }}
+  ,{
+      title: '上次处理时间',
+      dataIndex: 'approvedTime',
   }
-  return result;
+]
+
+function MessageTable(list?: any){
+  return(
+    <ProTable
+      dataSource={datas||[]}
+      columns={columns}
+      search={false}
+    />
+  )
+
 }
 
-const Applications: React.FC = () => {
-  // 获取tab列表数据
-  const { data: listData } = useRequest(() => {
-    return queryFakeList({
-      count: 30,
-    });
-  });
+const Applications = () => {
 
-  console.log(listData)
-
-
-  const itemMenu = (
-    <Menu>
-      <Menu.Item>
-        <a target="_blank" rel="noopener noreferrer" href="https://www.alipay.com/">
-          1st menu item
-        </a>
-      </Menu.Item>
-      <Menu.Item>
-        <a target="_blank" rel="noopener noreferrer" href="https://www.taobao.com/">
-          2nd menu item
-        </a>
-      </Menu.Item>
-      <Menu.Item>
-        <a target="_blank" rel="noopener noreferrer" href="https://www.tmall.com/">
-          3d menu item
-        </a>
-      </Menu.Item>
-    </Menu>
-  );
-  const CardInfo: React.FC<{
-    activeUser: React.ReactNode;
-    newUser: React.ReactNode;
-  }> = ({ activeUser, newUser }) => (
-    <div className={stylesApplications.cardInfo}>
-      <div>
-        <p>活跃用户</p>
-        <p>{activeUser}</p>
-      </div>
-      <div>
-        <p>新增用户</p>
-        <p>{newUser}</p>
-      </div>
-    </div>
-  );
+  const { data: list } = useRequest(()=>{
+    return getClubApplicationList( cookie.load("Ribo_token"));
+  })
+  //@ts-ignore
+  datas = list;
   return (
-    <List<ListItemDataType>
-      rowKey="id"
-      className={stylesApplications.filterCardList}
-      grid={{ gutter: 24, xxl: 3, xl: 2, lg: 2, md: 2, sm: 2, xs: 1 }}
-      dataSource={listData?.list || []}
-      renderItem={(item) => (
-        <List.Item key={item.id}>
-          <Card
-            hoverable
-            bodyStyle={{ paddingBottom: 20 }}
-            actions={[
-              <Tooltip key="download" title="下载">
-                <DownloadOutlined />
-              </Tooltip>,
-              <Tooltip title="编辑" key="edit">
-                <EditOutlined />
-              </Tooltip>,
-              <Tooltip title="分享" key="share">
-                <ShareAltOutlined />
-              </Tooltip>,
-              <Dropdown overlay={itemMenu} key="ellipsis">
-                <EllipsisOutlined />
-              </Dropdown>,
-            ]}
-          >
-            <Card.Meta avatar={<Avatar size="small" src={item.avatar} />} title={item.title} />
-            <div className={stylesApplications.cardItemContent}>
-              <CardInfo
-                activeUser={formatWan(item.activeUser)}
-                newUser={numeral(item.newUser).format('0,0')}
-              />
-            </div>
-          </Card>
-        </List.Item>
-      )}
-    />
+    <div>
+      <MessageTable list={datas||[]}/>
+    </div>
   );
 };
 

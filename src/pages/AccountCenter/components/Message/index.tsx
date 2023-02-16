@@ -1,6 +1,9 @@
 import {useRequest} from "@@/plugin-request/request";
 import {getUserMessageList} from "@/services/login/api";
 import {ProTable} from "@ant-design/pro-components";
+import cookie from "react-cookies";
+import useModal from "antd/es/modal/useModal";
+import {useModel} from "@@/plugin-model/useModel";
 
 
 let datas: API.UserMessage[] = [];
@@ -13,11 +16,20 @@ const columns = [
   {
     title: '内容',
     dataIndex: 'content',
+  },{
+    title: '时间',
+    dataIndex: 'time',
+  },{
+    title: '状态',
+    dataIndex: 'status',
+    valueEnum: {
+      0: { text: '未读', status: 'Error' },
+      1: { text: '已读', status: 'Success' },
+    }
   }
 ]
 
 function MessageTable(list?: any){
-  console.log(list.list)
   return(
     <ProTable
       dataSource={datas}
@@ -30,14 +42,18 @@ function MessageTable(list?: any){
 
 const Message = () => {
 
+  const { initialState, setInitialState } = useModel('@@initialState');
   const { data: list } = useRequest(()=>{
+    setInitialState({
+      ...initialState,
+      messageCount: undefined
+    });
     return getUserMessageList({
-      uid: "1",
-      token: '123'
+      token: cookie.load("Ribo_token"),
     });
   })
   //@ts-ignore
-  datas = list?.list;
+  datas = list;
   return (
     <div>
       <MessageTable list={list}/>

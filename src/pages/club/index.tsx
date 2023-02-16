@@ -8,27 +8,12 @@ import type { MenuProps } from 'antd';
 import {Menu} from 'antd';
 import {HomeOutlined, ProjectOutlined, UserOutlined} from "@ant-design/icons";
 import Loader from "@/pages/club/pages/loader";
-const items: MenuProps['items'] = [
-  {
-    label: '主页',
-    key: 'index',
-    icon: <HomeOutlined />
-  },
-  {
-    label: '社团成员',
-    key: 'user',
-    icon: <UserOutlined />,
-  },{
-    label: '社团活动',
-    key: 'activity',
-    icon: <ProjectOutlined />,
-  }
-];
-
-
+import {useModel} from "@@/plugin-model/useModel";
 
 
 const Index = () => {
+
+  const {initialState}  =  useModel('@@initialState')
   const cid: {id: any} = useParams();
   // 设定等待状态
   const [state,setState] = useState<{
@@ -46,10 +31,8 @@ const Index = () => {
     setCurrent(e.key);
   };
   if (state.loading && !state.querying){
-    console.log("loading")
     const getClubInfos = () => {
       const clubInfo = getClubInfo(cid.id).then((res) => {
-        console.log("loading1")
         setState({
           querying: false,
           loading: false,
@@ -60,15 +43,53 @@ const Index = () => {
     }
     getClubInfos();
   }else {
-    console.log("not loading");
     if (state.cidHistory !== cid.id){
-      console.log("not loading1");
       setState({
         loading: true,
         cidHistory: cid.id,
       })
     }
   }
+
+
+  const items: MenuProps['items'] = (state.data?.president == initialState?.currentUser?.uid) ?
+    [
+      {
+        label: '主页',
+        key: 'index',
+        icon: <HomeOutlined/>
+      },
+      {
+        label: '社团成员',
+        key: 'user',
+        icon: <UserOutlined/>,
+      }, {
+      label: '社团活动',
+      key: 'activity',
+      icon: <ProjectOutlined/>,
+    },
+      {
+        label: '社团管理',
+        key: 'manager',
+        icon: <ProjectOutlined/>,
+      }
+    ]:
+    [
+      {
+        label: '主页',
+        key: 'index',
+        icon: <HomeOutlined/>
+      },
+      {
+        label: '社团成员',
+        key: 'user',
+        icon: <UserOutlined/>,
+      }, {
+      label: '社团活动',
+      key: 'activity',
+      icon: <ProjectOutlined/>,
+    },
+    ]
 
 
   if (state.loading) {

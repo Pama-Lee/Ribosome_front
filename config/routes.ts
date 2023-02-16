@@ -1,4 +1,5 @@
 export default [
+
   {
     path: '/application',
     component: './Application',
@@ -19,7 +20,6 @@ export default [
         path: '/club/detail/:id',
         component: './club',
         icon: 'team',
-        routes: [],
       },
       {
         component: './404',

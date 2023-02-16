@@ -1,96 +1,41 @@
-import { PlusOutlined, HomeOutlined, ContactsOutlined, ClusterOutlined } from '@ant-design/icons';
-import { Avatar, Card, Col, Divider, Input, Row, Tag } from 'antd';
-import React, { useState, useRef } from 'react';
+import { ContactsOutlined, ClusterOutlined } from '@ant-design/icons';
+import {  Card, Col, Divider, Row } from 'antd';
+import React, { useState } from 'react';
 import { GridContent } from '@ant-design/pro-layout';
-import { Link, useRequest } from 'umi';
 import type { RouteChildrenProps } from 'react-router';
-import Projects from './components/Projects';
 import Applications from './components/Applications';
-import type { CurrentUser, TagType, tabKeyType } from './data.d';
-import { queryCurrent } from './service';
+import type { CurrentUser, tabKeyType } from './data.d';
 import styles from './Center.less';
 import Message from "@/pages/AccountCenter/components/Message";
 import {useModel} from "@@/plugin-model/useModel";
 
-const operationTabList = [
-  {
-    key: 'message',
-    tab: (
-      <span>
-        消息 <span style={{ fontSize: 14 }}>(8)</span>
-      </span>
-    ),
-  },
-  {
-    key: 'applications',
-    tab: (
-      <span>
-        申请结果 <span style={{ fontSize: 14 }}>(8)</span>
-      </span>
-    ),
-  },
-];
 
-const TagList: React.FC<{ tags: CurrentUser['tags'] }> = ({ tags }) => {
-  const ref = useRef<Input | null>(null);
-  const [newTags, setNewTags] = useState<TagType[]>([]);
-  const [inputVisible, setInputVisible] = useState<boolean>(false);
-  const [inputValue, setInputValue] = useState<string>('');
 
-  const showInput = () => {
-    setInputVisible(true);
-    if (ref.current) {
-      // eslint-disable-next-line no-unused-expressions
-      ref.current?.focus();
-    }
-  };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-  };
-
-  const handleInputConfirm = () => {
-    let tempsTags = [...newTags];
-    if (inputValue && tempsTags.filter((tag) => tag.label === inputValue).length === 0) {
-      tempsTags = [...tempsTags, { key: `new-${tempsTags.length}`, label: inputValue }];
-    }
-    setNewTags(tempsTags);
-    setInputVisible(false);
-    setInputValue('');
-  };
-
-  return (
-    <div className={styles.tags}>
-      <div className={styles.tagsTitle}>标签</div>
-      {(tags || []).concat(newTags).map((item) => (
-        <Tag key={item.key}>{item.label}</Tag>
-      ))}
-      {inputVisible && (
-        <Input
-          ref={ref}
-          type="text"
-          size="small"
-          style={{ width: 78 }}
-          value={inputValue}
-          onChange={handleInputChange}
-          onBlur={handleInputConfirm}
-          onPressEnter={handleInputConfirm}
-        />
-      )}
-      {!inputVisible && (
-        <Tag onClick={showInput} style={{ borderStyle: 'dashed' }}>
-          <PlusOutlined />
-        </Tag>
-      )}
-    </div>
-  );
-};
 
 const AccountCenter: React.FC<RouteChildrenProps> = () => {
   const [tabKey, setTabKey] = useState<tabKeyType>('message');
 
-  const { initialState, loading, error, refresh, setInitialState } = useModel('@@initialState');
-
+  const { initialState, loading } = useModel('@@initialState');
+  console.log(initialState)
+  const operationTabList = [
+    {
+      key: 'message',
+      tab: (
+        <span>
+        消息 <span style={{ fontSize: 14 }}>({initialState?.messageCount || 0})</span>
+      </span>
+      ),
+    },
+    {
+      key: 'applications',
+      tab: (
+        <span>
+        申请结果 <span style={{ fontSize: 14 }}>({initialState?.applicationCount || 0})</span>
+      </span>
+      ),
+    },
+  ];
 
   //  渲染用户信息
   const renderUserInfo = ({ title, group, geographic }: Partial<CurrentUser>) => {
@@ -137,7 +82,7 @@ const AccountCenter: React.FC<RouteChildrenProps> = () => {
                 <div className={styles.avatarHolder}>
                   <img alt="" src={initialState?.currentUser.avatar} />
                   <div className={styles.name}>{initialState?.currentUser.name}</div>
-                  <div>{initialState?.currentUser?.slogan}</div>
+                  <div>{initialState?.currentUser?.phone}</div>
                 </div>
                 {renderUserInfo(initialState?.currentUser)}
                 <Divider style={{ marginTop: 16 }} dashed />

@@ -58,7 +58,6 @@ const Login: React.FC = () => {
       const msg = await login({ ...values});
       // @ts-ignore
       if (msg.code === "200") {
-
         const defaultLoginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
           defaultMessage: '登录成功！',
@@ -72,6 +71,8 @@ const Login: React.FC = () => {
         await setInitialState(()=>({
           isLogin: true,
           currentUser: data?.data,
+          messageCount: data?.messageCount.messageCount,
+          applicationCount: data?.messageCount.applicationCount,
           settings: defaultSettings,
           menuData: menudata,
           permissions: data?.permission,
@@ -83,6 +84,8 @@ const Login: React.FC = () => {
         return;
       }else {
         message.error(msg.message);
+        cookie.remove("Ribo_token",{path:'/'})
+        toLoginPage();
         return;
       }
     } catch (error) {
@@ -107,6 +110,7 @@ const Login: React.FC = () => {
       version: "1.0.0"
     }
     handleSubmit(res);
+
   }else {
     const token_ribo = cookie.load("Ribo_token")
     if (token_ribo != undefined){

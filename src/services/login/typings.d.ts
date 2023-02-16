@@ -27,11 +27,11 @@ token?: string;
 
   type ClubInfo = {
 cid?: string;
-club_name?: string;
-club_logo?: string;
+name?: string;
+logo?: string;
 description?: string;
 type?: string;
-club_president?: string;
+president?: string;
   }
 
   type ClubApplication = {
